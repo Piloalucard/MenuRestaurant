@@ -12,9 +12,10 @@ struct comida{
 };
 
 int tam = 100;
-int cuenta = 0;
+float cuenta = 0;
+float ingresos = 0;
 char nombre[64] = "NOMBRE GENERICO";
-struct comida cmd[tam];    
+struct comida cmd[100];    
 
 void clear()
 {
@@ -26,30 +27,60 @@ void clear()
 
 void inicializar()
 {
-	for(int i = 0; i < tam; i++)
+	int i;
+	for(i = 0; i < tam; i++)
 	{
 		cmd[i].id = -1;
 		cmd[i].precio = -1;
-		cmd[i].nombre[0] = "NULL";
+		strcpy(cmd[i].nombre, "NULL");
 	}
 }
 
-float obtenerIngresos()
+void cargar()
 {
-	float ingresos = 0;
-	for(int i = 0; i < tam; i++)
+	cmd[0].id = 10;
+	cmd[0].precio = 30.5f;
+	strcpy(cmd[0].nombre, "POZOLE");
+	cmd[1].id = 20;
+	cmd[1].precio = 45.5f;
+	strcpy(cmd[1].nombre, "TORTA");
+	cmd[2].id = 30;
+	cmd[2].precio = 10.0f;
+	strcpy(cmd[2].nombre, "TACOS");
+	cmd[3].id = 40;
+	cmd[3].precio = 15.0f;
+	strcpy(cmd[3].nombre, "AGUA");
+	cmd[4].id = 50;
+	cmd[4].precio = 20.0f;
+	strcpy(cmd[4].nombre, "REFRESCO");
+	cmd[5].id = 60;
+	cmd[5].precio = 25.0f;
+	strcpy(cmd[5].nombre, "CERVEZA");
+	cmd[6].id = 70;
+	cmd[6].precio = 8.5f;
+	strcpy(cmd[6].nombre, "JERICALLA");
+
+	
+}
+
+float obtenerPrecios()
+{
+	float precios = 0;
+	int i;
+	for(i = 0; i < tam; i++)
 	{
 		if(cmd[i].id != -1)
 		{
-			ingresos += cmd[i].precio;
+			precios += cmd[i].precio;
 		}
 	}
-	return ingresos;
+	return precios;
 }
 
 int obtPos(int id)
 {
-	for(int i = 0; i < tam; i++)
+	int i;
+	for(i = 0; i < tam; i++)
 	{
 		if(cmd[i].id == id)
 		{
@@ -61,7 +92,8 @@ int obtPos(int id)
 
 bool estaLlleno()
 {
-	for(int i = 0; i < tam; i++)
+	int i;
+	for(i = 0; i < tam; i++)
 	{
 		if(cmd[i].id == -1)
 		{
@@ -84,12 +116,13 @@ const char* agregar()
 	scanf("%d", &id);
 	int pos;
 	if(pos=obtPos(id) != -1)
-	{
 		return "El id ya existe";
-	}
+	
+	if(id <= -1)
+		return "Ese ID es invalido";
 
-
-	for(int i = 0; i < tam; i++)
+	int i;
+	for(i = 0; i < tam; i++)	
 	{
 		if(cmd[i].id == -1)
 		{
@@ -108,12 +141,14 @@ const char* eliminar()
 	int id;
 	printf("Ingrese el id de la comida a eliminar: ");
 	scanf("%d", &id);
+	if(id <= -1)
+		return "Ese ID es invalido";
 	int pos;
 	if(pos=obtPos(id) != -1)
 	{
 		cmd[pos].id = -1;
 		cmd[pos].precio = -1;
-		cmd[pos].nombre[0] = "NULL";
+		strcpy(cmd[pos].nombre, "NULL");
 		return "Comida eliminada";
 	}
 	return "No se pudo eliminar la comida";
@@ -124,25 +159,40 @@ const char* modificar()
 	int id;
 	printf("Ingrese el id de la comida a modificar: ");
 	scanf("%d", &id);
-	int pos;
-	if(pos=obtPos(id) != -1)
+	if(id <= -1)
+		return "Ese ID es invalido";
+	
+	int i,pos;
+	for(i = 0; i < tam; i++)
 	{
-		float precio;
-		char nombre[32];
-		printf("Ingrese el nuevo nombre de la comida: ");
-		scanf("%s", nombre);
-		printf("Ingrese el nuevo precio de la comida: ");
-		scanf("%f", &precio);
-		cmd[pos].precio = precio;
-		strcpy(cmd[pos].nombre, nombre);
-		return "Comida modificada";
+		if(cmd[i].id == id)
+		{
+			pos=i;
+			break;
+		}
 	}
-	return "No se pudo modificar la comida";
+	if(obtPos(id) == -1)
+	{
+		return "No existe ese id";
+	}
+
+	float precio;
+	char nombre[32];
+	printf("Ingrese el nuevo nombre de la comida: ");
+	scanf("%s", nombre);
+	printf("Ingrese el nuevo precio de la comida: ");
+	scanf("%f", &precio);
+	cmd[pos].precio = precio;
+	strcpy(cmd[pos].nombre, nombre);
+	return "Comida modificada";
+
 }
 
 void mostrar()
 {
-	for(int i = 0; i < tam; i++)
+	int i;
+	printf("----------------------------------------------\n");
+	for(i = 0; i < tam; i++)
 	{
 		if(cmd[i].id != -1)
 		{
@@ -159,16 +209,23 @@ void pedirComida()
 	int id;
 	printf("Ingrese el id de la comida a pedir: ");
 	scanf("%d", &id);
-	int pos;
-	if(pos=obtPos(id) != -1)
+	if(id <= -1)
 	{
-		printf("Disfrute su comida\n");
-		cuenta += cmd[pos].precio;
+		printf("Ese es un ID invalido");
+		return;
 	}
-	else
+	int i;
+	for(i = 0; i < tam; i++)
 	{
-		printf("No se pudo pedir la comida\n");
+		if(cmd[i].id == id)
+		{
+			printf("Disfrute su comida\n");
+			cuenta += cmd[i].precio;
+			return;
+		}
 	}
+	printf("No se pudo pedir la comida\n");
+
 }
 
 void pagar()
@@ -179,6 +236,7 @@ void pagar()
 	scanf("%f", &pago);
 	if(pago >= cuenta)
 	{
+		ingresos += cuenta;
 		printf("Su cambio es de: %f\n", pago-cuenta);
 		cuenta = 0;
 	}
@@ -188,6 +246,7 @@ void pagar()
 	}
 	else
 	{
+		ingresos += pago;
 		cuenta -= pago;
 		printf("Su cuenta ahora es de: %f\n", cuenta);
 	}
@@ -195,10 +254,12 @@ void pagar()
 
 void menuOrdenar()
 {
-	clear();
+	system("cls");
 	char op = '0';
 	while (op != '4')
 	{
+		fflush(stdin);
+		printf(" !Bienvenido al restaurant %s!\n",nombre);
 		printf("1. Ver menu\n");
 		printf("2. Pedir comida\n");
 		printf("3. Pagar\n");
@@ -238,7 +299,7 @@ void menuOrdenar()
 
 void menuAdmin()
 {
-	clear();
+
 	int pass=7654,pin=0;
 	printf(" Ingresa el pin de administrador: ");
 	scanf("%i",&pin);
@@ -247,9 +308,11 @@ void menuAdmin()
 		printf("PIN incorrecto");
 		return;
 	}
+	clear();
 	char op = '0';
 	while(op != '5')
 	{
+		fflush(stdin);
 		printf(" !Bienvenido al restaurant %s!\n",nombre);
 		printf(" Que desea hacer?\n");
 		printf(" 1-Agregar Comida\n");
@@ -273,13 +336,12 @@ void menuAdmin()
 				clear();
 				break;
 			case '4':
-				printf("Los ingresos totales son: %f",obtenerIngresos());
+				printf("Los ingresos totales son: %f",ingresos);
 				clear();
 				break;
 				
 			case '5':
 				printf("Adios!");
-				clear();
 				break;
 				
 			default:
@@ -297,7 +359,7 @@ void mainMenu()
 	char op = '0';
 	while(op != '3')
 	{
-
+		fflush(stdin);
 		printf(" !Bienvenido al restaurant %s!\n",nombre);
 		printf(" Que apartado desea ver\n");
 		printf(" 1-Ordenar de comer\n");
@@ -333,6 +395,8 @@ int main()
 {
 	bool HadError=true;
     {
+    	inicializar();
+    	cargar();
         mainMenu();
         {
             HadError=false;
