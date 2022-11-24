@@ -206,25 +206,30 @@ void mostrar()
 
 void pedirComida()
 {
-	int id;
-	printf("Ingrese el id de la comida a pedir: ");
-	scanf("%d", &id);
-	if(id <= -1)
+
+	int id=0;
+	while(id != -1)
 	{
-		printf("Ese es un ID invalido");
-		return;
-	}
-	int i;
-	for(i = 0; i < tam; i++)
-	{
-		if(cmd[i].id == id)
+		printf("Ingrese el id de la comida a pedir o -1 para regresar: ");
+		scanf("%d", &id);
+		if(id <= -1)
 		{
-			printf("Disfrute su comida\n");
-			cuenta += cmd[i].precio;
+			printf("Ese es un ID invalido");
 			return;
 		}
+		int i;
+		for(i = 0; i < tam; i++)
+		{
+			if(cmd[i].id == id)
+			{
+				printf("Disfrute su comida %s\n",cmd[i].nombre);
+				cuenta += cmd[i].precio;
+				return;
+			}
+		}
+		printf("No se pudo pedir la comida\n");
 	}
-	printf("No se pudo pedir la comida\n");
+	
 
 }
 
